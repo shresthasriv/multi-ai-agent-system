@@ -6,11 +6,7 @@ A sophisticated multi-agent system for intelligent document processing using Lan
 
 ```bash
 # Install dependencies
-run 
-```
-uv sync
-```
-to install all the dependencies and activate environment
+run **uv sync** to install all the dependencies and activate environment
 
 # Set environment variables
 export DEEPSEEK_API_KEY="your_deepseek_api_key"
