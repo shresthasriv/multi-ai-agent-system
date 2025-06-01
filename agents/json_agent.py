@@ -42,6 +42,7 @@ For regulations: check for compliance requirements"""),
     async def process(self, input_data: Dict[str, Any], context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Process JSON document"""
         content = input_data.get("content", "")
+        model_id = input_data.get("model_id", "deepseek-chat")
         intent = context.get("intent", "general") if context else "general"
         
         try:
@@ -50,7 +51,9 @@ For regulations: check for compliance requirements"""),
                 content=content[:3000]
             )
             
-            response = await self.llm.ainvoke(messages)
+            # Use the specified model
+            llm = self.get_llm(model_id)
+            response = await llm.ainvoke(messages)
 
             try:
                 raw_content = response.content.strip()

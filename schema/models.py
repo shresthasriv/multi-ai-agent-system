@@ -3,6 +3,40 @@ from typing import Optional, Dict, Any, List
 from datetime import datetime
 from enum import Enum
 
+class ModelProvider(str, Enum):
+    """Enum for supported model providers"""
+    
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    DEEPSEEK = "deepseek"
+
+
+class SupportedModel(str, Enum):
+    """Supported model IDs"""
+    
+    GPT_35_TURBO = "gpt-3.5-turbo"
+    O1_PREVIEW = "o1-preview"
+    CLAUDE_35_HAIKU_LATEST = "claude-3-5-haiku-latest"
+    CLAUDE_35_SONNET_LATEST = "claude-3-5-sonnet-latest"
+    GPT_4O_MINI = "gpt-4o-mini"
+    O1 = "o1"
+    GPT_4O = "gpt-4o"
+    CLAUDE_37_SONNET_LATEST = "claude-3-7-sonnet-latest"
+    DEEPSEEK_CHAT = "deepseek-chat"
+    DEEPSEEK_REASON = "deepseek-reason"
+    
+    @classmethod
+    def get_provider(cls, model_id: str) -> ModelProvider:
+        """Get the provider for a model ID"""
+        if model_id.startswith(("gpt-", "o1")):
+            return ModelProvider.OPENAI
+        elif model_id.startswith("claude-"):
+            return ModelProvider.ANTHROPIC
+        elif model_id.startswith("deepseek-"):
+            return ModelProvider.DEEPSEEK
+        else:
+            raise ValueError(f"Unsupported model ID: {model_id}")
+
 class DocumentFormat(str, Enum):
     PDF = "pdf"
     JSON = "json"
@@ -61,6 +95,7 @@ class ProcessingRequest(BaseModel):
     content: str
     content_type: str
     metadata: Optional[Dict[str, Any]] = None
+    model_id: Optional[SupportedModel] = Field(default=SupportedModel.DEEPSEEK_CHAT, description="Model to use for processing")
 
 class ProcessingResponse(BaseModel):
     success: bool

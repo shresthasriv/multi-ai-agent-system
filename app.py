@@ -10,7 +10,7 @@ import aiofiles
 import json
 from agents.orchestrator import AgentOrchestrator
 from memory.manager import MemoryManager
-from schema.models import ProcessingResponse
+from schema.models import ProcessingResponse, SupportedModel, ModelProvider
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -68,6 +68,7 @@ app.add_middleware(
 class TextProcessingRequest(BaseModel):
     content: str
     metadata: Optional[dict] = None
+    model_id: Optional[str] = "deepseek-chat"
 
 
 @app.get("/")
@@ -117,7 +118,8 @@ async def process_text(request: TextProcessingRequest):
         result = await orchestrator.process_document(
             content=request.content,
             content_type="auto",
-            metadata=request.metadata
+            metadata=request.metadata,
+            model_id=request.model_id
         )
         return result
     
@@ -128,7 +130,8 @@ async def process_text(request: TextProcessingRequest):
 @app.post("/process/file", response_model=ProcessingResponse)
 async def process_file(
     file: UploadFile = File(...),
-    metadata: Optional[str] = Form(None)
+    metadata: Optional[str] = Form(None),
+    model_id: Optional[str] = Form("deepseek-chat")
 ):
     """Process uploaded file (PDF, JSON file, email file)"""
     global orchestrator
@@ -152,7 +155,8 @@ async def process_file(
         result = await orchestrator.process_document(
             content=content_text,
             content_type=file.content_type or "application/octet-stream",
-            metadata=file_metadata
+            metadata=file_metadata,
+            model_id=model_id
         )
         
         return result
@@ -210,7 +214,8 @@ async def classify_content(request: TextProcessingRequest):
     
     try:
         classification_input = {
-            "content": request.content
+            "content": request.content,
+            "model_id": request.model_id
         }
         
         result = await orchestrator.classifier.process(classification_input)
@@ -218,7 +223,6 @@ async def classify_content(request: TextProcessingRequest):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Classification failed: {str(e)}")
-
 
 if __name__ == "__main__":
     import uvicorn

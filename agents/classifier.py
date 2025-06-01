@@ -49,13 +49,16 @@ class ClassifierAgent(BaseAgent):
     async def process(self, input_data: Dict[str, Any], context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Classify the input document using direct LLM calls"""
         content = input_data.get("content", "")
+        model_id = input_data.get("model_id", "deepseek-chat")
         
         try:
             messages = self.prompt.format_messages(
                 content=content[:2000] 
             )
             
-            response = await self.llm.ainvoke(messages)
+            # Use the specified model
+            llm = self.get_llm(model_id)
+            response = await llm.ainvoke(messages)
 
             try:
                 raw_content = response.content.strip()

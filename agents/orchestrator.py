@@ -27,14 +27,16 @@ class AgentOrchestrator:
         self, 
         content: str, 
         content_type: str, 
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
+        model_id: Optional[str] = "deepseek-chat"
     ) -> ProcessingResponse:
         """Process a document through the multi-agent system"""
         
         try:
             classification_input = {
                 "content": content,
-                "content_type": content_type
+                "content_type": content_type,
+                "model_id": model_id
             }
             
             classification_result = await self.classifier.process(classification_input)
@@ -67,7 +69,8 @@ class AgentOrchestrator:
                 context.update(metadata)
             agent_input = {
                 "content": content,
-                "content_type": content_type
+                "content_type": content_type,
+                "model_id": model_id
             }
             
             processing_result = await target_agent.process(agent_input, context)
@@ -114,13 +117,38 @@ class AgentOrchestrator:
             
             history = []
             for entry in recent_entries:
+                # Generate a meaningful summary based on the source and extracted values
+                summary = "No summary available"
+                
+                if entry.source == "classifier_agent":
+                    classification = entry.extracted_values.get("classification", {})
+                    if classification:
+                        summary = f"Classified as {classification.get('format', 'unknown')} format with {classification.get('intent', 'unknown')} intent (confidence: {classification.get('confidence', 0):.2f})"
+                
+                elif entry.source == "email_agent":
+                    analysis = entry.extracted_values.get("analysis", {})
+                    if analysis:
+                        sender = analysis.get("sender", "unknown")
+                        urgency = analysis.get("urgency", "unknown")
+                        summary = f"Email from {sender} with {urgency} urgency: {analysis.get('crm_summary', 'No summary')}"
+                
+                elif entry.source == "json_agent":
+                    analysis = entry.extracted_values.get("analysis", {})
+                    if analysis:
+                        validation = "valid" if analysis.get("validation_passed", False) else "invalid"
+                        summary = f"JSON document ({validation}): {analysis.get('summary', 'No summary')}"
+                
+                # Fallback to error details if available
+                if summary == "No summary available" and "error_details" in entry.extracted_values:
+                    summary = f"Error: {entry.extracted_values['error_details'][:100]}..."
+                
                 history.append({
                     "id": entry.id,
                     "source": entry.source,
                     "document_type": entry.document_type.value,
                     "intent": entry.intent.value,
                     "timestamp": entry.timestamp.isoformat(),
-                    "summary": entry.extracted_values.get("summary", "No summary available")
+                    "summary": summary
                 })
             
             return {
