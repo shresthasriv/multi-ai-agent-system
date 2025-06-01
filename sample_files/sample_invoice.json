@@ -1,0 +1,25 @@
+{
+  "invoice_number": "INV-2024-001",
+  "date": "2024-12-01",
+  "vendor": "Tech Solutions Inc",
+  "customer": "Business Corp",
+  "items": [
+    {
+      "description": "Software License",
+      "quantity": 5,
+      "unit_price": 299.99,
+      "total": 1499.95
+    },
+    {
+      "description": "Support Services",
+      "quantity": 1,
+      "unit_price": 500.00,
+      "total": 500.00
+    }
+  ],
+  "subtotal": 1999.95,
+  "tax": 199.99,
+  "total": 2199.94,
+  "payment_terms": "Net 30",
+  "due_date": "2025-01-01"
+}

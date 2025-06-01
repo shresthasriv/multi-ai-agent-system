@@ -1,0 +1,30 @@
+{
+  "rfq_number": "RFQ-2024-042",
+  "company": "Manufacturing Corp",
+  "contact": {
+    "name": "Sarah Johnson",
+    "email": "sarah.johnson@manufacturing.com",
+    "phone": "+1-555-0456"
+  },
+  "deadline": "2024-12-15",
+  "items": [
+    {
+      "part_number": "WIDGET-001",
+      "description": "Industrial Widget",
+      "quantity": 1000,
+      "specifications": "High-grade steel, ISO certified"
+    },
+    {
+      "part_number": "BOLT-002", 
+      "description": "Stainless Steel Bolts",
+      "quantity": 5000,
+      "specifications": "M8x25mm, grade 8.8"
+    }
+  ],
+  "requirements": [
+    "ISO 9001 certification required",
+    "Delivery within 30 days",
+    "Bulk pricing preferred"
+  ],
+  "budget_range": "10000-15000"
+}

@@ -1,0 +1,16 @@
+From: john.doe@example.com
+To: support@company.com
+Subject: Urgent - System Down
+
+Hi team,
+
+Our production system is currently down and we need immediate assistance. This is critical for our business operations.
+
+The error started at 2:30 PM today and affects all users.
+
+Please prioritize this issue.
+
+Best regards,
+John Doe
+CTO, Example Corp
+Phone: +1-555-0123
