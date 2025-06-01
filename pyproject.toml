@@ -1,0 +1,20 @@
+[project]
+name = "multi-ai-system"
+version = "0.1.0"
+description = "Multi-agent AI system for document processing"
+authors = [{name = "Shrestha Srivastava"}]
+requires-python = "==3.10.12"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "langchain>=0.2.0",
+    "langchain-deepseek>=0.1.0",
+    "langchain-community>=0.2.0",
+    "pydantic>=2.5.0",
+    "redis>=5.0.0",
+    "aiofiles>=23.2.1",
+    "python-multipart>=0.0.6",
+    "python-dotenv>=1.0.0",
+    "PyPDF2>=3.0.1",
+    "email-validator>=2.1.0",
+]
