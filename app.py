@@ -32,22 +32,19 @@ async def lifespan(app: FastAPI):
     await memory_manager.connect()
 
     if not os.getenv("DEEPSEEK_API_KEY"):
-        print("⚠️  DEEPSEEK_API_KEY not found. Please set it as an environment variable.")
+        print("DEEPSEEK_API_KEY not found. Please set it as an environment variable.")
         raise ValueError("DEEPSEEK_API_KEY is required for the system to function")
 
     orchestrator = AgentOrchestrator(memory_manager)
-    print("✅ Multi-Agent System with LangChain and DeepSeek initialized successfully")
+    print("Multi-Agent System with LangChain and DeepSeek initialized successfully")
     
     yield
-    
-    # Shutdown
-    print("🛑 Shutting down Multi-Agent AI System...")
+    print("Shutting down Multi-Agent AI System...")
     if memory_manager:
         await memory_manager.disconnect()
-    print("✅ Shutdown complete")
+    print("Shutdown complete")
 
 
-# Create FastAPI app
 app = FastAPI(
     title="Multi-Agent AI Document Processing System",
     description="A system that classifies and processes documents using multiple specialized AI agents",
@@ -55,7 +52,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -96,7 +92,6 @@ async def health_check():
     
     if memory_manager:
         try:
-            # Test Redis connection
             await memory_manager.redis_client.ping()
             status["components"]["redis"] = True
         except Exception:
@@ -141,7 +136,6 @@ async def process_file(
     
     try:
         content = await file.read()
-        content_text = content.decode('utf-8')
         file_metadata = {}
         if metadata:
             try:
@@ -151,18 +145,48 @@ async def process_file(
         
         file_metadata["filename"] = file.filename
         file_metadata["content_type"] = file.content_type
+
+        if (file.content_type == "application/pdf" or 
+            (file.filename and file.filename.lower().endswith('.pdf'))):
+            
+            from utils.pdf_processor import PDFProcessor
+
+            pdf_result = PDFProcessor.extract_text_and_metadata(content)
+            
+            if not pdf_result["extraction_successful"]:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"PDF processing failed: {pdf_result.get('error', 'Unknown error')}"
+                )
+
+            content_text = pdf_result["text_content"]
+
+            file_metadata.update({
+                "pdf_metadata": pdf_result["metadata"],
+                "pdf_processing_info": pdf_result["processing_info"],
+                "original_format": "pdf"
+            })
+
+            content_type = "auto"
+            
+        else:
+            try:
+                content_text = content.decode('utf-8')
+                content_type = file.content_type or "application/octet-stream"
+            except UnicodeDecodeError:
+                raise HTTPException(status_code=400, detail="File content is not text-readable")
         
         result = await orchestrator.process_document(
             content=content_text,
-            content_type=file.content_type or "application/octet-stream",
+            content_type=content_type,
             metadata=file_metadata,
             model_id=model_id
         )
         
         return result
     
-    except UnicodeDecodeError:
-        raise HTTPException(status_code=400, detail="File content is not text-readable")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"File processing failed: {str(e)}")
 

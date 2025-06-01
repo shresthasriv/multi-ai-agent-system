@@ -52,8 +52,6 @@ class EmailAgent(BaseAgent):
                 intent=intent,
                 content=content[:3000]
             )
-            
-            # Use the specified model
             llm = self.get_llm(model_id)
             response = await llm.ainvoke(messages)
 

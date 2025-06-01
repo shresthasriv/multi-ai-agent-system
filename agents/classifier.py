@@ -40,7 +40,8 @@ class ClassifierAgent(BaseAgent):
 
             Routing Rules:
             - Route json format → json_agent
-            - Route email/pdf format → email_agent
+            - Route email format → email_agent
+            - for pdf files, analyze the type of content inside them and route them accordingly, for example: if pdf contains email related content, route to email_agent otherwise, json agent
 
             REMEMBER: Return ONLY the JSON object, nothing else!"""),
             ("user", "Analyze this content and classify it:\n\n{content}"),

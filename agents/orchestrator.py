@@ -93,7 +93,6 @@ class AgentOrchestrator:
             )
             
         except Exception as e:
-            # Store error in memory
             error_memory_id = await self.memory_manager.store_entry(
                 source="orchestrator",
                 document_type=DocumentFormat.EMAIL,
@@ -117,7 +116,6 @@ class AgentOrchestrator:
             
             history = []
             for entry in recent_entries:
-                # Generate a meaningful summary based on the source and extracted values
                 summary = "No summary available"
                 
                 if entry.source == "classifier_agent":

@@ -14,28 +14,28 @@ class JSONAgent(BaseAgent):
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", """You are a JSON document processing expert. Analyze the JSON content and provide a detailed analysis including:
 
-1. Validation status (is it valid JSON?)
-2. Missing required fields (based on document intent)
-3. Data anomalies (null values, negative amounts, etc.)
-4. Reformatted/cleaned version
-5. Summary and insights
+            1. Validation status (is it valid JSON?)
+            2. Missing required fields (based on document intent)
+            3. Data anomalies (null values, negative amounts, etc.)
+            4. Reformatted/cleaned version
+            5. Summary and insights
 
-CRITICAL: Your response MUST be ONLY a valid JSON object starting with {{ and ending with }}. Do NOT include any text before or after the JSON. Do NOT use markdown formatting.
+            CRITICAL: Your response MUST be ONLY a valid JSON object starting with {{ and ending with }}. Do NOT include any text before or after the JSON. Do NOT use markdown formatting.
 
-Respond with this exact JSON structure:
-{{
-  "validation_passed": true/false,
-  "missing_fields": ["field1", "field2"],
-  "anomalies": ["description of issues found"],
-  "reformatted_data": {{}},
-  "summary": "Brief summary of the document",
-  "key_insights": ["insight1", "insight2"]
-}}
+            Respond with this exact JSON structure:
+            {{
+            "validation_passed": true/false,
+            "missing_fields": ["field1", "field2"],
+            "anomalies": ["description of issues found"],
+            "reformatted_data": {{}},
+            "summary": "Brief summary of the document",
+            "key_insights": ["insight1", "insight2"]
+            }}
 
-For invoices: check for amount, vendor, date, items
-For RFQs: check for requirements, deadline, contact info
-For complaints: check for issue description, severity
-For regulations: check for compliance requirements"""),
+            For invoices: check for amount, vendor, date, items
+            For RFQs: check for requirements, deadline, contact info
+            For complaints: check for issue description, severity
+            For regulations: check for compliance requirements"""),
             ("user", "Intent: {intent}\n\nJSON Content:\n{content}"),
         ])
     
@@ -50,8 +50,7 @@ For regulations: check for compliance requirements"""),
                 intent=intent,
                 content=content[:3000]
             )
-            
-            # Use the specified model
+
             llm = self.get_llm(model_id)
             response = await llm.ainvoke(messages)
 
