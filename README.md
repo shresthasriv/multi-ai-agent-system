@@ -12,7 +12,7 @@ run **uv sync** to install all the dependencies and activate environment
 export DEEPSEEK_API_KEY="your_deepseek_api_key"
 export OPENAI_API_KEY="your_openai_api_key"  # Optional
 export ANTHROPIC_API_KEY="your_anthropic_api_key"  # Optional
-export REDIS_URL="redis://localhost:6379"  # Optional
+export REDIS_URL="redis://localhost:6379" 
 
 # Start Redis (if running locally)
 redis-server
